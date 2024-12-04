@@ -2,24 +2,24 @@ use std::{fs, str::Lines};
 
 fn check_for_safety(levels: &[i32]) -> bool {
     let mut is_increasing = None::<bool>;
-    let mut previous_number = None::<i32>;
+    let mut previous_level = None::<i32>;
 
-    for number in levels.iter().copied() {
-        if let Some(n) = previous_number {
-            match is_increasing.get_or_insert(number > n) {
+    for level in levels.iter().copied() {
+        if let Some(previous) = previous_level {
+            match is_increasing.get_or_insert(level > previous) {
                 true => {
-                    if number <= n || number - n > 3 {
+                    if level <= previous || level - previous > 3 {
                         return false;
                     }
                 }
                 false => {
-                    if number >= n || n - number > 3 {
+                    if level >= previous || previous - level > 3 {
                         return false;
                     }
                 }
             }
         }
-        previous_number = Some(number);
+        previous_level = Some(level);
     }
 
     true
@@ -51,18 +51,21 @@ fn part2(input: Lines) -> i32 {
             .map(|l| l.parse::<i32>().expect("Failed to parse number from input"))
             .collect::<Vec<_>>();
 
-        if !check_for_safety(&levels) {
+        if check_for_safety(&levels) {
+            result += 1;
+        } else {
             for i in 0..levels.len() {
-                let mut filtered = levels.clone();
-                filtered.remove(i);
+                let filtered = {
+                    let mut new = levels.clone();
+                    new.remove(i);
+                    new
+                };
 
                 if check_for_safety(&filtered) {
                     result += 1;
                     break;
                 }
             }
-        } else {
-            result += 1;
         }
     }
 
