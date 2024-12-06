@@ -16,15 +16,15 @@ fn main() {
             ('u', U) => Some(L),
             ('l', L) => Some(OpenParen),
             ('(', OpenParen) => Some(FirstNumber),
-            (_, FirstNumber) => parse_number(&input, &mut lexer, begin).map(|n| {
-                numbers.0 = n;
-                Comma
-            }),
+            ('0'..='9', FirstNumber) => {
+                numbers.0 = parse_number(&mut lexer, &input, begin);
+                Some(Comma)
+            }
             (',', Comma) => Some(SecondNumber),
-            (_, SecondNumber) => parse_number(&input, &mut lexer, begin).map(|n| {
-                numbers.1 = n;
-                CloseParen
-            }),
+            ('0'..='9', SecondNumber) => {
+                numbers.1 = parse_number(&mut lexer, &input, begin);
+                Some(CloseParen)
+            }
             (')', CloseParen) => {
                 muls.push(numbers);
                 None

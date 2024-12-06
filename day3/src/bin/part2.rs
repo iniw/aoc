@@ -21,15 +21,15 @@ fn main() {
                     ('u', Mul::U) => Some(Mul::L),
                     ('l', Mul::L) => Some(Mul::OpenParen),
                     ('(', Mul::OpenParen) => Some(Mul::FirstNumber),
-                    (_, Mul::FirstNumber) => parse_number(&input, &mut lexer, begin).map(|n| {
-                        numbers.0 = n;
-                        Mul::Comma
-                    }),
+                    ('0'..='9', Mul::FirstNumber) => {
+                        numbers.0 = parse_number(&mut lexer, &input, begin);
+                        Some(Mul::Comma)
+                    }
                     (',', Mul::Comma) => Some(Mul::SecondNumber),
-                    (_, Mul::SecondNumber) => parse_number(&input, &mut lexer, begin).map(|n| {
-                        numbers.1 = n;
-                        Mul::CloseParen
-                    }),
+                    ('0'..='9', Mul::SecondNumber) => {
+                        numbers.1 = parse_number(&mut lexer, &input, begin);
+                        Some(Mul::CloseParen)
+                    }
                     (')', Mul::CloseParen) => {
                         muls.push(numbers);
                         state = State::Enabled(Enabled::Idle);
@@ -55,7 +55,7 @@ fn main() {
                 }
                 .map(Enabled::Dont),
 
-                _ => Some(Enabled::Idle),
+                _ => None,
             }
             .map(State::Enabled)
             .unwrap_or(State::Enabled(Enabled::Idle)),
@@ -75,7 +75,7 @@ fn main() {
                 }
                 .map(Disabled::Do),
 
-                _ => Some(Disabled::Idle),
+                _ => None,
             }
             .map(State::Disabled)
             .unwrap_or(State::Disabled(Disabled::Idle)),
