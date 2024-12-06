@@ -16,12 +16,12 @@ fn main() {
             ('u', U) => Some(L),
             ('l', L) => Some(OpenParen),
             ('(', OpenParen) => Some(FirstNumber),
-            (_, FirstNumber) => parse_number(&input, &mut lexer, begin).map(|n| {
+            (_, FirstNumber) => parse_number(&mut lexer, &input, begin).map(|n| {
                 numbers.0 = n;
                 Comma
             }),
             (',', Comma) => Some(SecondNumber),
-            (_, SecondNumber) => parse_number(&input, &mut lexer, begin).map(|n| {
+            (_, SecondNumber) => parse_number(&mut lexer, &input, begin).map(|n| {
                 numbers.1 = n;
                 CloseParen
             }),
