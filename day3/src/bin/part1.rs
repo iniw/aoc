@@ -1,5 +1,6 @@
-use day3::parse_number;
 use std::fs;
+
+use day3::parse_number;
 
 fn main() {
     let input = fs::read_to_string("input.txt").expect("Failed to read input!");
